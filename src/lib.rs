@@ -1,3 +1,5 @@
+mod lib_test;
+
 extern crate rand;
 
 use rand::{thread_rng, RngCore};
@@ -165,18 +167,18 @@ impl SecretData {
                 return None;
             }
 
-            xs.push(share[0].to_owned());
+            xs.push(share[0].to_owned());//share[0] is "id" ,means that "x_i"
         }
         let mut mycoefficients: Vec<String> = vec![];
         let mut mysecretdata: Vec<u8> = vec![];
         let rounds = shares[0].len() - 1;
 
         for byte_to_use in 0..rounds {
-            let mut fxs: Vec<u8> = vec![];
+            let mut fxs: Vec<u8> = vec![];//fxs is "y_i"
             for share in shares.clone() {
                 fxs.push(share[1..][byte_to_use]);
             }
-
+            //println!("{:?}",&fxs);
             match SecretData::full_lagrange(&xs, &fxs) {
                 None => return None,
                 Some(resulting_poly) => {
@@ -195,7 +197,7 @@ impl SecretData {
         }
     }
 
-    fn accumulate_share_bytes(id: u8, coefficient_bytes: Vec<u8>) -> Result<u8, ShamirError> {
+    pub fn accumulate_share_bytes(id: u8, coefficient_bytes: Vec<u8>) -> Result<u8, ShamirError> {
         if id == 0 {
             return Err(ShamirError::InvalidShareCount);
         }
@@ -211,7 +213,7 @@ impl SecretData {
         Ok(accumulator)
     }
 
-    fn full_lagrange(xs: &[u8], fxs: &[u8]) -> Option<Vec<u8>> {
+    pub fn full_lagrange(xs: &[u8], fxs: &[u8]) -> Option<Vec<u8>> {
         let mut returned_coefficients: Vec<u8> = vec![];
         let len = fxs.len();
         for i in 0..len {
@@ -244,7 +246,7 @@ impl SecretData {
     }
 
     #[inline]
-    fn gf256_add(a: u8, b: u8) -> u8 {
+    pub fn gf256_add(a: u8, b: u8) -> u8 {
         a ^ b
     }
 
@@ -254,7 +256,7 @@ impl SecretData {
     }
 
     #[inline]
-    fn gf256_mul(a: u8, b: u8) -> u8 {
+    pub fn gf256_mul(a: u8, b: u8) -> u8 {
         if a == 0 || b == 0 {
             0
         } else {
